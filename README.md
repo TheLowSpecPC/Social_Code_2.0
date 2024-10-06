@@ -12,3 +12,4 @@ Then copy the Channel ID of the channel used to store the data and past it to th
 
 Also don't forget to install requirments.txt.
 Enjoy :)
+ReadMe by: Abhishek R S
