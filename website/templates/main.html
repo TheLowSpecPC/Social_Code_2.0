@@ -1,0 +1,229 @@
+<html>
+<head>
+    <title>Discord Cloud Storage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body class="p-3 mb-2 bg-dark">
+
+    <div class="d-grid gap-3">
+        <div class="p-0">
+            <nav class="navbar navbar-expand-lg navbar-light bg-secondary rounded">
+              <div class="container-fluid" style="width: auto; margin-left: auto; margin-right: auto">
+
+                  <a href="https://www.github.com/TheLowSpecPC"><h1 class="text-light">SOCIAL CODE 2.0</h1></a>
+
+              </div>
+            </nav>
+        </div>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalUpload">
+            Upload File
+          </button>
+
+          <div class="modal fade text-light" id="ModalUpload" tabindex="-1" role="dialog" aria-labelledby="modal-title-upload" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content bg-secondary">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modal-title-upload">Select the File</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/upload" id="dropper" class="dropzone dz-clickable bg-dark" method="post" enctype="multipart/form-data">
+                       <div class="d-grid gap-3" id="uploadForm">
+                       </div>
+                    </form>
+                </div>
+              </div>
+            </div>
+          </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script type="text/javascript">
+    var checkElement = [];
+    fetch('/fetch').then(response => response.json()).then(function (data) {
+        var files = {};
+        var folders = {};
+
+        for (const [key, value] of Object.entries(data[0])) {
+            if (value[1] === "null") {
+                if (isNaN(value[0]) === false){
+                    value[0] = (value[0]*10).toString() + ' mb'
+                }
+                files[key] = value;
+            }
+        }
+
+        for (const [key, value] of Object.entries(data[1])) {
+            folders[key] = value;
+        }
+
+        var folderWrapper = document.getElementById("accordionFolder");
+        var fileWrapper = document.getElementById("accordionFile");
+
+        var myFolderHTML = '';
+        var myFileHTML = '';
+
+        flag = 1
+        for (const [keyFolder, valueFolder] of Object.entries(folders)) {
+            myFolderHTML += '<div class="accordion-item">\n' +
+                '                <h2 class="accordion-header" id="headingFolder' + flag + '">\n' +
+                '                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFolder' + flag + '" aria-expanded="false" aria-controls="collapseFolder' + flag + '">\n' +
+                '                   <strong>' + keyFolder + '</strong>\n' +
+                '                  </button>\n' +
+                '                </h2>\n' +
+                '                <div id="collapseFolder' + flag + '" class="accordion-collapse collapse" aria-labelledby="headingFolder' + flag + '" data-bs-parent="#accordionFolder">\n' +
+                '                  <div class="accordion-body text-dark" id="accordionMidFolder' + keyFolder + '">\n' +
+                '                  </div>\n' +
+                '                </div>\n' +
+                '              </div>\n';
+            flag += 1
+            checkElement.push("accordionMidFolder"+keyFolder);
+        }
+
+        flag = 1
+        for (const [keyFile, valueFile] of Object.entries(files)) {
+            myFileHTML += '<div class="accordion-item">\n' +
+                '                <h2 class="accordion-header" id="headingFile' + flag + '">\n' +
+                '                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFile' + flag + '" aria-expanded="false" aria-controls="collapseFile' + flag + '">\n' +
+                '                   <strong>' + keyFile + ' Size: ' + valueFile[0] + '</strong>\n' +
+                '                  </button>\n' +
+                '                </h2>\n' +
+                '                <div id="collapseFile' + flag + '" class="accordion-collapse collapse" aria-labelledby="headingFile' + flag + '" data-bs-parent="#accordionFile">\n' +
+                '                  <div class="accordion-body text-dark" id="accordionMidFile' + keyFile + '">\n' +
+                '                  </div>\n' +
+                '                </div>\n' +
+                '              </div>\n';
+            flag += 1
+            checkElement.push("accordionMidFile"+keyFile);
+        }
+
+        folderWrapper.innerHTML = myFolderHTML;
+        fileWrapper.innerHTML = myFileHTML;
+    })
+
+    function reload(){
+        fetch('/fetch').then(response => response.json()).then(function (data){
+            var files = {};
+            var folders = {};
+            var checkID = [];
+
+            for (const [key, value] of Object.entries(data[0])) {
+                if (value[1] === "null") {
+                    files[key] = value;
+                    checkID.push("accordionMidFile"+key);
+                }
+            }
+
+            for (const [key, value] of Object.entries(data[1])) {
+                folders[key] = value;
+                checkID.push("accordionMidFolder"+key);
+            }
+
+            if (checkElement !== []){
+                for (const element of checkElement){
+                    if (!(checkID.includes(element))){
+                        location.reload()
+                    }
+                }
+            }
+
+            var folderMid = '';
+            var fileMid = '';
+
+            var fl = 0;
+            for (const [keyFolder, valueFolder] of Object.entries(folders)) {
+                var folderMidWrapper = document.getElementById("accordionMidFolder" + keyFolder);
+
+                for (const [keyFile, valueFile] of Object.entries(data[0])) {
+                    if (valueFile[1] === keyFolder) {
+                        if (valueFile[2] !== 'inDiscord' && valueFile[2] !== 'inServer') {
+                            fl +=1
+                        }
+                    }
+                }
+
+                if (valueFolder === "saved" && fl === 0) {
+                    folderMid = '<button type="button" class="btn btn-primary" onclick="location.href = \'/folder?name=' + keyFolder + '\'">Open Folder</button>\n' +
+                                '<button type="button" class="btn btn-primary" onclick="location.href = \'/delfolder?folderdel=' + keyFolder + '\'">Delete Folder</button>\n';
+                }
+                else if (valueFolder === "saved" && fl !== 0) {
+                    folderMid = '<button type="button" class="btn btn-primary" onclick="location.href = \'/folder?name=' + keyFolder + '\'">Open Folder</button>\n';
+                }
+                else if (valueFolder === "deleting") {
+                    folderMid = '<h3 class="text-center">Deleting Folder</h3>\n';
+                }
+
+                folderMidWrapper.innerHTML.trim();
+                folderMidWrapper.innerHTML = folderMid;
+            }
+
+            for (const [keyFile, valueFile] of Object.entries(files)) {
+                var fileMidWrapper = document.getElementById("accordionMidFile" + keyFile);
+
+                if (valueFile[2] === "inDiscord"){
+                    fileMid = '<button type="button" class="btn btn-primary" onclick="location.href = \'/downfromdis?file=' + keyFile + '\'">Download From Discord</button>\n' +
+                              '<button type="button" class="btn btn-primary" onclick="location.href = \'/delfromdis?file=' + keyFile + '\'">Delete From Discord</button>\n' +
+                              '<button type="button" class="btn btn-primary" onclick="location.href = \'/move?file=' + keyFile + '\'">Move</button>\n';
+                }
+                else if (valueFile[2] === "uptodis"){
+                    fileMid = '<h3 class="text-center">Uploading to Discord<br> '+Math.round(valueFile[3])+'%</h3>\n';
+                }
+                else if (valueFile[2] === "downfromdis"){
+                    fileMid = '<h3 class="text-center">Downloading to Server<br> '+Math.round(valueFile[3])+'%</h3>\n';
+                }
+                else if (valueFile[2] === "inServer"){
+                    fileMid = '<button type="button" class="btn btn-primary" onclick="location.href = \'/move?file=' + keyFile + '\'">Move</button>\n' +
+                              '<h3>Downloaded to Server</h3>\n' +
+                              '<button type="button" class="btn btn-primary" onclick="location.href = \'/downfromser?file=' + keyFile + '\'">Download From Server</button>\n' +
+                              '<button type="button" class="btn btn-primary" onclick="location.href = \'/delfromser?file=' + keyFile + '\'">Delete From Server</button>\n';
+                }
+                else if (valueFile[2] === "deleting"){
+                    fileMid = '<h3 class="text-center">Deleting from Discord<br> '+Math.round(valueFile[3])+'%</h3>\n';
+                }
+
+                fileMidWrapper.innerHTML.trim();
+                fileMidWrapper.innerHTML = fileMid;
+            }
+        })
+    }
+    reload()
+    window.onload = setInterval(reload, 3000)
+
+    Dropzone.options.dropper = {
+        paramName: 'uptoser',
+        chunking: true,
+        forceChunking: true,
+        url: '/upload?folder=null',
+        uploadMultiple: false,
+        maxFiles:1,
+        maxFilesize: 20000,
+        chunkSize: 1000000, // bytes
+
+        init: function() {
+              this.on("maxfilesexceeded", function(file) {
+                    this.removeAllFiles();
+                    this.addFile(file);
+              });
+        },
+        init: function () {
+            this.on("complete", function (file) {
+              if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+                window.location.replace('/');
+              }
+            });
+          },
+        uploadprogress: function(file, progress, bytesSent) {
+            var formMid = document.getElementById("uploadForm")
+            if (progress !== 100){
+                formMid.innerHTML = '<h2 class="text-center">Progress: '+Math.round(progress)+'%</h2>\n';
+            }
+        }
+    }
+</script>
+</body>
+</html>
