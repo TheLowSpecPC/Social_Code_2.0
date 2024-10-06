@@ -1,4 +1,8 @@
 # Social Code 2.0
+building solutions, driving change 12 hours of collaborative impact.
+our project name - WAVEDRIVE
+Alen Roy - developer
+Abhishek RS - co developer and presenter
 It's same as Discord-Cloud-Storage, but on the web with some new features. May or may not make the website public.
 
 Refer here on how to make a discord server and discord bot respectively:
