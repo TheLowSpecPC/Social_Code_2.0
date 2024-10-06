@@ -1,4 +1,4 @@
-# Discord-Cloud-Storage-WebApp
+# Social Code 2.0
 It's same as Discord-Cloud-Storage, but on the web with some new features. May or may not make the website public.
 
 Refer here on how to make a discord server and discord bot respectively:
